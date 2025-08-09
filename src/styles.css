@@ -11,7 +11,7 @@ body {
 }
 
 .map {
-  @apply w-full h-[500px] sm:h-[600px] bg-city-bg relative rounded-lg p-2 overflow-hidden;
+  @apply w-full h-[500px] sm:h-[600px] bg-gray-200 relative rounded-lg p-2 overflow-hidden;
 }
 
 .npc {
