@@ -18,16 +18,17 @@ export default function NewsFeed({ backend }) {
       clearInterval(interval)
       ws.close()
     }
-  }, [])
+  }, [backend])
 
   return (
-    <div className="border border-gray-300 p-4 rounded-lg bg-white">
-      <h3 className="font-bold mb-2">Лента новостей</h3>
-      <div className="h-56 overflow-auto">
+    <div className="news-feed">
+      <h3 className="font-bold text-lg mb-3">Городские новости</h3>
+      <div className="h-64 overflow-y-auto">
         {news.map((n, i) => (
-          <div key={i} className="mb-2">
-            <b>{n.title}</b>
+          <div key={i} className="mb-3 p-2 bg-gray-50 rounded-lg">
+            <b className="text-city-blue">{n.title}</b>
             <div className="text-sm">{n.content}</div>
+            <div className="text-xs text-gray-500">{new Date(n.ts).toLocaleString('ru')}</div>
           </div>
         ))}
       </div>
