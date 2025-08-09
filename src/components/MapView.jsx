@@ -1,83 +1,68 @@
-import React, { useEffect, useState, useRef } from 'react'
-import MapView from './components/MapView'
-import ChatWindow from './components/ChatWindow'
-import NewsFeed from './components/NewsFeed'
-import Weather from './components/Weather'
-import MayorPanel from './components/MayorPanel'
-import { toast } from 'react-toastify'
+import React from 'react'
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
+import { FaHome, FaShoppingCart, FaBriefcase, FaTree, FaCity, FaCoffee, FaShieldAlt, FaNewspaper, FaCar, FaChalkboardTeacher, FaLaptopCode, FaUserMd, FaWrench, FaPaintBrush, FaStore, FaGraduationCap, FaBreadSlice, FaWalking, FaUser } from 'react-icons/fa'
 
-const BACKEND = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'
+export default function MapView({ npcs, onSelect, weather }) {
+  const bgClass = weather === 'дождь' ? 'bg-gray-300' : weather === 'буря' ? 'bg-red-200' : 'bg-green-200'
 
-export default function App() {
-  const [npcs, setNpcs] = useState([])
-  const [selected, setSelected] = useState(null)
-  const [weather, setWeather] = useState('солнечно')
-  const [isMayor, setIsMayor] = useState(false)
-  const [isChatOpen, setIsChatOpen] = useState(false)
-  const [loading, setLoading] = useState(true)
-  const wsRef = useRef(null)
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [mapRes, weatherRes] = await Promise.all([
-          fetch(BACKEND + '/map'),
-          fetch(BACKEND + '/weather')
-        ])
-        if (!mapRes.ok || !weatherRes.ok) throw new Error('Ошибка загрузки данных')
-        const mapData = await mapRes.json()
-        const weatherData = await weatherRes.json()
-        setNpcs(mapData)
-        setWeather(weatherData.current || 'солнечно')
-        setLoading(false)
-      } catch (error) {
-        console.error('Ошибка загрузки:', error)
-        toast.error('Не удалось загрузить данные с сервера')
-        setLoading(false)
-      }
-    }
-    fetchData()
-
-    const ws = new WebSocket((BACKEND.replace('http', 'ws')) + '/ws/map')
-    ws.onopen = () => console.log('WebSocket карты открыт')
-    ws.onmessage = (evt) => {
-      try {
-        const m = JSON.parse(evt.data)
-        if (m.type === 'map_update') {
-          setNpcs(prev => prev.map(p => p.id === m.data.id ? { ...p, x: m.data.x, y: m.data.y, state: { ...p.state, location: m.data.location } } : p))
-        } else if (m.type === 'news') {
-          toast.info(`${m.data.title}: ${m.data.content}`)
-          if (m.data.title.includes('Погода')) setWeather(m.data.content.split(' ')[1].toLowerCase())
-          if (m.data.title.includes('Выборы')) {
-            const winner = m.data.content.split(' ')[2]
-            setIsMayor(winner === 'Игрок')
-          }
-        }
-      } catch (e) {
-        console.error('WebSocket ошибка:', e)
-      }
-    }
-    wsRef.current = ws
-    return () => ws.close()
-  }, [])
-
-  if (loading) return <div className="text-center py-10">Загрузка...</div>
+  const getNpcIcon = (profession) => {
+    if (profession.includes('Бариста')) return <FaCoffee className="text-brown-500" />
+    if (profession.includes('Полицейский')) return <FaShieldAlt className="text-blue-500" />
+    if (profession.includes('Журналист')) return <FaNewspaper className="text-yellow-500" />
+    if (profession.includes('Таксист')) return <FaCar className="text-gray-500" />
+    if (profession.includes('Учитель')) return <FaChalkboardTeacher className="text-purple-500" />
+    if (profession.includes('Программист')) return <FaLaptopCode className="text-green-500" />
+    if (profession.includes('Врач')) return <FaUserMd className="text-red-500" />
+    if (profession.includes('Механик')) return <FaWrench className="text-orange-500" />
+    if (profession.includes('Художник')) return <FaPaintBrush className="text-pink-500" />
+    if (profession.includes('Продавец')) return <FaStore className="text-teal-500" />
+    if (profession.includes('Студентка')) return <FaGraduationCap className="text-indigo-500" />
+    if (profession.includes('Пекарь')) return <FaBreadSlice className="text-yellow-600" />
+    if (profession.includes('Пенсионерка')) return <FaWalking className="text-gray-600" />
+    return <FaUser className="text-city-blue" />
+  }
 
   return (
-    <div className="min-h-screen bg-city-bg p-4">
-      <Weather current={weather} />
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="flex-1">
-          <MapView npcs={npcs} onSelect={(npc) => { setSelected(npc); setIsChatOpen(true); }} weather={weather} />
+    <TransformWrapper minScale={0.5} maxScale={3} initialScale={1}>
+      <TransformComponent>
+        <div className={`map ${bgClass} w-[1200px] h-[600px]`}>
+          <div className="location bg-blue-300 left-0 top-0 w-[200px] h-[200px]">
+            <FaHome className="text-2xl mr-2" /> Дом
+          </div>
+          <div className="location bg-yellow-300 left-[200px] top-[200px] w-[200px] h-[200px]">
+            <FaShoppingCart className="text-2xl mr-2" /> Магазин
+          </div>
+          <div className="location bg-purple-300 left-[400px] top-0 w-[200px] h-[200px]">
+            <FaBriefcase className="text-2xl mr-2" /> Работа
+          </div>
+          <div className="location bg-green-300 left-[600px] top-[200px] w-[200px] h-[200px]">
+            <FaTree className="text-2xl mr-2" /> Парк
+          </div>
+          <div className="location bg-red-300 left-0 top-[200px] w-[200px] h-[200px]">
+            <FaCity className="text-2xl mr-2" /> Мэрия
+          </div>
+          {npcs.length > 0 ? (
+            npcs.map(n => (
+              <div
+                key={n.id}
+                className="npc group relative"
+                onClick={() => onSelect(n)}
+                style={{ left: `${n.x}px`, top: `${n.y}px` }}
+              >
+                {getNpcIcon(n.profession)}
+                <div className="npc-info">
+                  <p><b>{n.name}</b> ({n.profession})</p>
+                  <p>Деньги: {n.state?.money || 0} монет</p>
+                  <p>Локация: {n.state?.location || 'Неизвестно'}</p>
+                  <p>Отношения: {Object.entries(n.state?.relations || {}).map(([k, v]) => `${k}: ${v === 'friend' ? 'друг' : v === 'enemy' ? 'враг' : 'нейтрал'}`).join(', ') || 'Нет данных'}</p>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-center text-red-500">Нет данных о жителях</p>
+          )}
         </div>
-        <div className="w-full md:w-80 lg:w-96 flex flex-col gap-4">
-          <NewsFeed backend={BACKEND} />
-          {isMayor && <MayorPanel backend={BACKEND} />}
-        </div>
-      </div>
-      {isChatOpen && selected && (
-        <ChatWindow backend={BACKEND} npc={selected} onClose={() => setIsChatOpen(false)} />
-      )}
-    </div>
+      </TransformComponent>
+    </TransformWrapper>
   )
 }
