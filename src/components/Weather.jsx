@@ -9,7 +9,7 @@ export default function Weather({ current }) {
   }
 
   return (
-    <div className="flex items-center gap-2 bg-white p-3 rounded-lg shadow">
+    <div className="flex items-center gap-2 bg-white p-3 rounded-lg shadow mb-4">
       <span className="text-lg font-semibold">Погода:</span>
       {icons[current] || <FaSun />}
       <span className="capitalize">{current}</span>
