@@ -14,11 +14,30 @@ export default function App() {
   const [weather, setWeather] = useState('солнечно')
   const [isMayor, setIsMayor] = useState(false)
   const [isChatOpen, setIsChatOpen] = useState(false)
+  const [loading, setLoading] = useState(true)
   const wsRef = useRef(null)
 
   useEffect(() => {
-    fetch(BACKEND + '/map').then(r => r.json()).then(setNpcs)
-    fetch(BACKEND + '/weather').then(r => r.json()).then(w => setWeather(w.current || 'солнечно'))
+    const fetchData = async () => {
+      try {
+        const [mapRes, weatherRes] = await Promise.all([
+          fetch(BACKEND + '/map'),
+          fetch(BACKEND + '/weather')
+        ])
+        if (!mapRes.ok || !weatherRes.ok) throw new Error('Ошибка загрузки данных')
+        const mapData = await mapRes.json()
+        const weatherData = await weatherRes.json()
+        setNpcs(mapData)
+        setWeather(weatherData.current || 'солнечно')
+        setLoading(false)
+      } catch (error) {
+        console.error('Ошибка загрузки:', error)
+        toast.error('Не удалось загрузить данные с сервера')
+        setLoading(false)
+      }
+    }
+    fetchData()
+
     const ws = new WebSocket((BACKEND.replace('http', 'ws')) + '/ws/map')
     ws.onopen = () => console.log('WebSocket карты открыт')
     ws.onmessage = (evt) => {
@@ -34,11 +53,15 @@ export default function App() {
             setIsMayor(winner === 'Игрок')
           }
         }
-      } catch (e) {}
+      } catch (e) {
+        console.error('WebSocket ошибка:', e)
+      }
     }
     wsRef.current = ws
     return () => ws.close()
   }, [])
+
+  if (loading) return <div className="text-center py-10">Загрузка...</div>
 
   return (
     <div className="min-h-screen bg-city-bg p-4">
