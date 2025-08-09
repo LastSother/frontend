@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: Inter, Arial;
+  margin: 0;
+  padding: 0;
+  background: #eef2f7;
+}
+.map {
+  @apply w-full h-[640px] bg-gradient-to-b from-blue-200 to-green-200 relative rounded-lg p-2 overflow-hidden;
+}
+.npc {
+  @apply absolute w-9 h-9 rounded-full flex items-center justify-center text-sm cursor-pointer bg-white border-2 border-gray-800 shadow-md transition-all duration-500;
+}
+.npc:hover {
+  @apply scale-110;
+}
+.location {
+  @apply absolute bg-opacity-50 rounded-lg text-center text-xs font-bold p-1;
+}
+.chat-message {
+  @apply p-2 rounded-lg mb-2;
+}
+.player-message {
+  @apply bg-blue-100 text-right;
+}
+.npc-message {
+  @apply bg-green-100 text-left;
+}
