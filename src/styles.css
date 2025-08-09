@@ -7,31 +7,35 @@ body {
   margin: 0;
   padding: 0;
   background: #eef2f7;
+  overflow-x: hidden;
 }
+
 .map {
   @apply w-full h-[500px] sm:h-[600px] bg-city-bg relative rounded-lg p-2 overflow-hidden;
 }
+
 .npc {
   @apply absolute w-10 h-10 rounded-full flex items-center justify-center text-sm cursor-pointer bg-white border-2 border-city-blue shadow-md transition-transform duration-500;
 }
 .npc:hover {
   @apply scale-110;
 }
+
 .location {
-  @apply absolute bg-opacity-30 rounded-lg text-center text-xs font-bold p-2;
+  @apply absolute bg-opacity-70 rounded-lg text-center text-xs font-bold p-2 flex items-center justify-center;
 }
-.chat-window {
-  @apply border border-gray-300 p-4 rounded-lg bg-white shadow-lg;
+
+.chat-modal {
+  @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
 }
-.chat-message {
-  @apply p-2 rounded-lg mb-2 max-w-[80%];
+.chat-content {
+  @apply bg-white p-6 rounded-lg shadow-lg w-full max-w-md mx-4 sm:mx-auto;
 }
-.player-message {
-  @apply bg-city-blue text-white ml-auto;
+
+.news-panel {
+  @apply bg-white p-4 rounded-lg shadow-lg w-full max-w-xs;
 }
-.npc-message {
-  @apply bg-city-green text-white mr-auto;
-}
-.news-feed {
-  @apply border border-gray-300 p-4 rounded-lg bg-white shadow-lg;
+
+.npc-info {
+  @apply absolute bg-white p-4 rounded-lg shadow-lg z-10 hidden group-hover:block w-64;
 }
