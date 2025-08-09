@@ -13,6 +13,7 @@ export default function App() {
   const [selected, setSelected] = useState(null)
   const [weather, setWeather] = useState('солнечно')
   const [isMayor, setIsMayor] = useState(false)
+  const [isChatOpen, setIsChatOpen] = useState(false)
   const wsRef = useRef(null)
 
   useEffect(() => {
@@ -40,18 +41,20 @@ export default function App() {
   }, [])
 
   return (
-    <div className="flex flex-col min-h-screen gap-4 p-4">
+    <div className="min-h-screen bg-city-bg p-4">
       <Weather current={weather} />
       <div className="flex flex-col md:flex-row gap-4">
         <div className="flex-1">
-          <MapView npcs={npcs} onSelect={setSelected} weather={weather} />
+          <MapView npcs={npcs} onSelect={(npc) => { setSelected(npc); setIsChatOpen(true); }} weather={weather} />
         </div>
         <div className="w-full md:w-80 lg:w-96 flex flex-col gap-4">
-          <ChatWindow backend={BACKEND} npc={selected} />
           <NewsFeed backend={BACKEND} />
           {isMayor && <MayorPanel backend={BACKEND} />}
         </div>
       </div>
+      {isChatOpen && selected && (
+        <ChatWindow backend={BACKEND} npc={selected} onClose={() => setIsChatOpen(false)} />
+      )}
     </div>
   )
 }
