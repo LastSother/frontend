@@ -21,7 +21,7 @@ export default function NewsFeed({ backend }) {
   }, [backend])
 
   return (
-    <div className="news-feed">
+    <div className="news-panel">
       <h3 className="font-bold text-lg mb-3">Городские новости</h3>
       <div className="h-64 overflow-y-auto">
         {news.map((n, i) => (
